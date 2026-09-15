@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Grand Podder Hotel - Welcome & Reception Desk</title>
+  <title>The Shanford Grand - Welcome & Reception Desk</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,6 +25,25 @@
       background-color: #f0fdf4 !important;
       box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
     }
+
+    /* SG Luxury Crest Emblem */
+    .brand-crest {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 1rem;
+      border: 2px solid #fbbf24;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Cinzel", serif;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #fbbf24;
+      letter-spacing: 0.12em;
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.35);
+      background: radial-gradient(circle, rgba(251, 191, 36, 0.15) 0%, transparent 80%);
+    }
   </style>
 </head>
 <body>
@@ -33,6 +52,7 @@
        1. FRONT WELCOME SCREEN (ONLY SHOWN FIRST)
        ======================================================== -->
   <section id="welcomeScreen">
+    <div class="brand-crest">SG</div>
     <div class="hotel-stars">★★★★★</div>
 
     <div class="welcome-mega-highlight">
@@ -42,7 +62,7 @@
 
     <div class="hotel-signature-container">
       <div class="signature-flourish-line"></div>
-      <div class="unique-hotel-brand">THE GRAND PODDER HOTEL</div>
+      <div class="unique-hotel-brand">THE SHANFORD GRAND</div>
       <div class="signature-flourish-line right"></div>
     </div>
 
@@ -141,7 +161,7 @@
 
           <!-- Members & Gov ID with OTP Verification -->
           <div class="form-field col-span-2" style="margin-top: 0.5rem;">
-            <label>3. Member Details & Government IDs (Aadhaar / ID OTP Verification)</label>
+            <label>3. Member Details & Government IDs (ID OTP Verification)</label>
             <div id="membersContainer"></div>
             <button type="button" class="btn-add-member" onclick="addMemberSlot()">+ Add Another Member</button>
           </div>
@@ -245,7 +265,7 @@
   <div id="slipModal" class="modal-backdrop">
     <div class="modal-folio-sheet">
       <div class="slip-brand-top">
-        <h2>THE GRAND PODDER HOTEL</h2>
+        <h2>THE SHANFORD GRAND</h2>
         <div style="font-size:0.8rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Customer Folio & Official Registration Slip</div>
       </div>
 
@@ -624,7 +644,6 @@
         return;
       }
 
-      /* Stop Resend Timer Immediately */
       if (card._otpInterval) {
         clearInterval(card._otpInterval);
       }
