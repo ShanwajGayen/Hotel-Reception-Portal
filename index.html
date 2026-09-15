@@ -12,6 +12,20 @@
 
   <!-- External Stylesheet Link -->
   <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* Real-Time Border Feedback for ID Validation */
+    .input-invalid {
+      border-color: #ef4444 !important;
+      background-color: #fef2f2 !important;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+    }
+    .input-valid {
+      border-color: #10b981 !important;
+      background-color: #f0fdf4 !important;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+    }
+  </style>
 </head>
 <body>
 
@@ -21,13 +35,11 @@
   <section id="welcomeScreen">
     <div class="hotel-stars">★★★★★</div>
 
-    <!-- BIGGEST LETTER SIZE WITH HIGHLIGHT + SMILE -->
     <div class="welcome-mega-highlight">
       <span>WELCOME</span>
       <span class="smile-mega-icon">😊</span>
     </div>
 
-    <!-- THE GRAND PODDER HOTEL IN LUXURY STYLE -->
     <div class="hotel-signature-container">
       <div class="signature-flourish-line"></div>
       <div class="unique-hotel-brand">THE GRAND PODDER HOTEL</div>
@@ -113,10 +125,7 @@
           </div>
 
           <div class="form-field col-span-2">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
-              <label>Enter 4-Digit Mobile OTP Code <span class="req">*</span></label>
-              <span id="phoneOtpStatus" style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">Verification Pending</span>
-            </div>
+            <label>Enter 4-Digit Mobile OTP Code <span class="req">*</span></label>
             <div class="otp-blocks">
               <input type="text" maxlength="1" class="otp-cell" pattern="[0-9]" inputmode="numeric" required />
               <input type="text" maxlength="1" class="otp-cell" pattern="[0-9]" inputmode="numeric" required />
@@ -132,7 +141,7 @@
 
           <!-- Members & Gov ID with OTP Verification -->
           <div class="form-field col-span-2" style="margin-top: 0.5rem;">
-            <label>3. Member Details & Government IDs (ID OTP Verification)</label>
+            <label>3. Member Details & Government IDs (Aadhaar / ID OTP Verification)</label>
             <div id="membersContainer"></div>
             <button type="button" class="btn-add-member" onclick="addMemberSlot()">+ Add Another Member</button>
           </div>
@@ -294,14 +303,13 @@
     const DEMO_OTP = "1234";
     const ID_VERIFY_DEMO_OTP = "9999";
     let isOtpSent = false;
-    let isPhoneVerified = false;
-    let phoneOtpTimer = null;
+    let isPrimaryPhoneVerified = false;
+    let primaryOtpTimer = null;
     let hasSigned = false;
 
     const banner = document.getElementById("statusBanner");
     const otpDigits = document.querySelectorAll(".otp-cell");
     const otpSendBtn = document.getElementById("otpSendBtn");
-    const phoneOtpStatus = document.getElementById("phoneOtpStatus");
     const membersContainer = document.getElementById("membersContainer");
     const sigCanvas = document.getElementById("sigCanvas");
     const sigCtx = sigCanvas.getContext("2d");
@@ -360,13 +368,38 @@
       banner.textContent = "";
     }
 
+    /* Auto tab & live checking for 4-digit mobile OTP */
     otpDigits.forEach((box, idx) => {
       box.addEventListener("input", (e) => {
         if (e.target.value.length === 1 && idx < otpDigits.length - 1) {
           otpDigits[idx + 1].focus();
         }
-        checkPrimaryOtpComplete();
+
+        const currentOtp = Array.from(otpDigits).map(d => d.value).join("");
+        if (currentOtp.length === 4) {
+          if (currentOtp === DEMO_OTP) {
+            isPrimaryPhoneVerified = true;
+            if (primaryOtpTimer) clearInterval(primaryOtpTimer);
+            otpSendBtn.textContent = "Verified ✓";
+            otpSendBtn.disabled = true;
+            otpSendBtn.style.background = "#dcfce7";
+            otpSendBtn.style.color = "#15803d";
+            otpSendBtn.style.borderColor = "#86efac";
+            otpDigits.forEach(d => {
+              d.disabled = true;
+              d.classList.remove("input-invalid");
+              d.classList.add("input-valid");
+            });
+            showBanner("Mobile number authenticated successfully.", "success");
+          } else {
+            otpDigits.forEach(d => d.classList.add("input-invalid"));
+            showBanner("Entered OTP is invalid. Please try again (Demo OTP: " + DEMO_OTP + ")", "error");
+          }
+        } else {
+          otpDigits.forEach(d => d.classList.remove("input-invalid"));
+        }
       });
+
       box.addEventListener("keydown", (e) => {
         if (e.key === "Backspace" && !e.target.value && idx > 0) {
           otpDigits[idx - 1].focus();
@@ -374,50 +407,8 @@
       });
     });
 
-    function checkPrimaryOtpComplete() {
-      const enteredOtp = Array.from(otpDigits).map(d => d.value).join("");
-      if (enteredOtp.length === 4) {
-        if (enteredOtp === DEMO_OTP) {
-          verifyPrimaryPhoneOtpSuccess();
-        } else {
-          showBanner(`Invalid OTP code. Please use demo OTP: ${DEMO_OTP}`, "error");
-        }
-      }
-    }
-
-    function verifyPrimaryPhoneOtpSuccess() {
-      clearBanner();
-      isPhoneVerified = true;
-
-      // Stop the resend countdown timer immediately
-      if (phoneOtpTimer) {
-        clearInterval(phoneOtpTimer);
-        phoneOtpTimer = null;
-      }
-
-      otpSendBtn.disabled = true;
-      otpSendBtn.textContent = "Verified ✓";
-      otpSendBtn.style.background = "var(--success)";
-      otpSendBtn.style.color = "#ffffff";
-      otpSendBtn.style.borderColor = "var(--success)";
-
-      otpDigits.forEach(box => {
-        box.disabled = true;
-        box.style.borderColor = "#86efac";
-        box.style.background = "#f0fdf4";
-      });
-
-      document.getElementById("guestPhone").readOnly = true;
-      phoneOtpStatus.textContent = "Mobile Authenticated ✓";
-      phoneOtpStatus.style.color = "var(--success)";
-
-      showBanner("Primary mobile number verified successfully.", "success");
-    }
-
     function requestOtp() {
       clearBanner();
-      if (isPhoneVerified) return;
-
       const phone = document.getElementById("guestPhone").value.trim();
 
       if (!/^\d{10}$/.test(phone)) {
@@ -430,26 +421,66 @@
       otpSendBtn.disabled = true;
       let timerVal = 30;
       otpSendBtn.textContent = `Resend (${timerVal}s)`;
-      phoneOtpStatus.textContent = `OTP dispatched (Use demo: ${DEMO_OTP})`;
-      phoneOtpStatus.style.color = "var(--brand-accent)";
-      showBanner(`OTP sent to +91 ${phone}. (Demo code: ${DEMO_OTP})`, "success");
+      showBanner(`OTP dispatched to +91 ${phone}. (Use demo code: ${DEMO_OTP})`, "success");
+      otpDigits.forEach(d => {
+        d.value = "";
+        d.disabled = false;
+        d.classList.remove("input-invalid", "input-valid");
+      });
       otpDigits[0].focus();
 
-      if (phoneOtpTimer) clearInterval(phoneOtpTimer);
-
-      phoneOtpTimer = setInterval(() => {
+      if (primaryOtpTimer) clearInterval(primaryOtpTimer);
+      primaryOtpTimer = setInterval(() => {
         timerVal--;
         if (timerVal > 0) {
-          otpSendBtn.textContent = `Resend (${timerVal}s)`;
+          if (!isPrimaryPhoneVerified) {
+            otpSendBtn.textContent = `Resend (${timerVal}s)`;
+          }
         } else {
-          clearInterval(phoneOtpTimer);
-          phoneOtpTimer = null;
-          if (!isPhoneVerified) {
+          clearInterval(primaryOtpTimer);
+          if (!isPrimaryPhoneVerified) {
             otpSendBtn.disabled = false;
             otpSendBtn.textContent = "Resend OTP";
           }
         }
       }, 1000);
+    }
+
+    /* Government ID Format Validation Rules */
+    function validateIdDocumentInput(input) {
+      const card = input.closest(".member-card");
+      const idType = card.querySelector(".member-id-type").value;
+      const value = input.value.trim().toUpperCase();
+      input.value = value;
+
+      let isValid = false;
+
+      if (!idType) {
+        input.classList.remove("input-valid", "input-invalid");
+        return false;
+      }
+
+      if (idType === "Aadhaar Card") {
+        isValid = /^\d{12}$/.test(value);
+      } else if (idType === "Passport") {
+        isValid = /^[A-Z][0-9]{7}$/.test(value);
+      } else if (idType === "Voter ID") {
+        isValid = /^[A-Z]{3}[0-9]{7}$/.test(value);
+      } else if (idType === "Driving License") {
+        isValid = /^[A-Z0-9]{15}$/.test(value);
+      }
+
+      if (value.length === 0) {
+        input.classList.remove("input-valid", "input-invalid");
+      } else if (isValid) {
+        input.classList.remove("input-invalid");
+        input.classList.add("input-valid");
+      } else {
+        input.classList.remove("input-valid");
+        input.classList.add("input-invalid");
+      }
+
+      return isValid;
     }
 
     function addMemberSlot(isPrimary = false) {
@@ -471,12 +502,12 @@
           <input type="text" class="member-name" placeholder="Full Name" ${isPrimary ? 'id="primaryMemberNameInput"' : ''} required />
           <select class="member-id-type" required onchange="handleIdTypeSelection(this)">
             <option value="" disabled selected>Select Gov ID</option>
-            <option value="Aadhaar Card">Aadhaar Card (Instant OTP)</option>
-            <option value="Passport">Passport</option>
-            <option value="Voter ID">Voter ID</option>
-            <option value="Driving License">Driving License</option>
+            <option value="Aadhaar Card">Aadhaar Card (12-Digits)</option>
+            <option value="Passport">Passport (1 Letter + 7 Digits)</option>
+            <option value="Voter ID">Voter ID (3 Letters + 7 Digits)</option>
+            <option value="Driving License">Driving License (15 Chars)</option>
           </select>
-          <input type="text" class="member-id-number" placeholder="Document ID Number" required />
+          <input type="text" class="member-id-number" placeholder="Document ID Number" oninput="validateIdDocumentInput(this)" required />
         </div>
 
         <div class="id-verification-panel">
@@ -504,10 +535,21 @@
     function handleIdTypeSelection(selectEl) {
       const card = selectEl.closest(".member-card");
       const idInput = card.querySelector(".member-id-number");
+      idInput.value = "";
+      idInput.classList.remove("input-valid", "input-invalid");
+
       if (selectEl.value === "Aadhaar Card") {
-        idInput.placeholder = "Enter 12-Digit Document Number";
-      } else {
-        idInput.placeholder = "Document ID Number";
+        idInput.placeholder = "12-Digit UID (e.g., 554433221100)";
+        idInput.maxLength = 12;
+      } else if (selectEl.value === "Passport") {
+        idInput.placeholder = "e.g., A1234567";
+        idInput.maxLength = 8;
+      } else if (selectEl.value === "Voter ID") {
+        idInput.placeholder = "e.g., ABC1234567";
+        idInput.maxLength = 10;
+      } else if (selectEl.value === "Driving License") {
+        idInput.placeholder = "15-Digit DL Number";
+        idInput.maxLength = 15;
       }
     }
 
@@ -515,15 +557,16 @@
       clearBanner();
       const card = btn.closest(".member-card");
       const idType = card.querySelector(".member-id-type").value;
-      const idNum = card.querySelector(".member-id-number").value.trim();
+      const idInput = card.querySelector(".member-id-number");
 
       if (!idType) {
         showBanner("Please select the Government ID type first.", "error");
         return;
       }
-      if (!idNum) {
-        showBanner("Please enter the Government ID document number before requesting verification OTP.", "error");
-        card.querySelector(".member-id-number").focus();
+
+      if (!validateIdDocumentInput(idInput)) {
+        showBanner(`Invalid ${idType} format. Please check the document digits.`, "error");
+        idInput.focus();
         return;
       }
 
@@ -533,27 +576,32 @@
       btn.textContent = `Resend (${timer}s)`;
 
       const statusText = card.querySelector(".id-status-text");
-      statusText.textContent = `OTP dispatched to registered mobile (Use demo: ${ID_VERIFY_DEMO_OTP})`;
+      statusText.textContent = `OTP dispatched to registered ID mobile (Demo OTP: ${ID_VERIFY_DEMO_OTP})`;
       statusText.style.color = "var(--brand-accent)";
 
       showBanner(`Authentication code sent for ${idType}. Demo OTP: ${ID_VERIFY_DEMO_OTP}`, "success");
 
-      // Clear any prior interval stored on this card
-      if (card._resendTimer) clearInterval(card._resendTimer);
-
-      card._resendTimer = setInterval(() => {
+      const interval = setInterval(() => {
         timer--;
+        if (card.dataset.idVerified === "true") {
+          clearInterval(interval);
+          btn.textContent = "Verified ✓";
+          btn.disabled = true;
+          return;
+        }
+
         if (timer > 0) {
           btn.textContent = `Resend (${timer}s)`;
         } else {
-          clearInterval(card._resendTimer);
-          card._resendTimer = null;
+          clearInterval(interval);
           if (card.dataset.idVerified !== "true") {
             btn.disabled = false;
             btn.textContent = "Resend OTP";
           }
         }
       }, 1000);
+
+      card._otpInterval = interval;
     }
 
     function verifyIdOtp(btn) {
@@ -563,7 +611,7 @@
       const enteredOtp = otpInput.value.trim();
       const statusText = card.querySelector(".id-status-text");
       const badge = card.querySelector(".id-verified-badge");
-      const sendOtpBtn = card.querySelector(".btn-send-id-otp");
+      const sendBtn = card.querySelector(".btn-send-id-otp");
 
       if (card.dataset.idOtpSent !== "true") {
         showBanner("Please click 'Send Verification OTP' first.", "error");
@@ -571,14 +619,14 @@
       }
 
       if (enteredOtp !== ID_VERIFY_DEMO_OTP) {
-        showBanner(`Invalid ID verification code. Enter demo OTP: ${ID_VERIFY_DEMO_OTP}`, "error");
+        otpInput.classList.add("input-invalid");
+        showBanner(`OTP is invalid. Please enter valid authentication code (Demo OTP: ${ID_VERIFY_DEMO_OTP})`, "error");
         return;
       }
 
-      // Stop any active resend timer on this occupant card
-      if (card._resendTimer) {
-        clearInterval(card._resendTimer);
-        card._resendTimer = null;
+      /* Stop Resend Timer Immediately */
+      if (card._otpInterval) {
+        clearInterval(card._otpInterval);
       }
 
       card.dataset.idVerified = "true";
@@ -590,12 +638,13 @@
       btn.disabled = true;
       btn.textContent = "Verified ✓";
       btn.style.background = "var(--success)";
-      otpInput.disabled = true;
 
-      // Lock the send button as well
-      sendOtpBtn.disabled = true;
-      sendOtpBtn.textContent = "OTP Verified";
-      sendOtpBtn.style.display = "none";
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Verified ✓";
+
+      otpInput.disabled = true;
+      otpInput.classList.remove("input-invalid");
+      otpInput.classList.add("input-valid");
 
       card.querySelector(".member-id-type").disabled = true;
       card.querySelector(".member-id-number").readOnly = true;
@@ -604,9 +653,7 @@
     }
 
     function removeMember(btn) {
-      const card = btn.closest(".member-card");
-      if (card._resendTimer) clearInterval(card._resendTimer);
-      card.remove();
+      btn.closest(".member-card").remove();
       refreshMemberLabels();
     }
 
@@ -721,8 +768,13 @@
       e.preventDefault();
       clearBanner();
 
-      if (!isPhoneVerified) {
-        showBanner("Please verify primary guest mobile number using demo OTP: 1234.", "error");
+      const otp = Array.from(otpDigits).map(d => d.value).join("");
+      if (!isPrimaryPhoneVerified) {
+        if (!isOtpSent) {
+          showBanner("Please send OTP and verify mobile number.", "error");
+        } else {
+          showBanner("Entered primary mobile OTP is invalid. Use demo code: 1234", "error");
+        }
         return;
       }
 
@@ -731,16 +783,23 @@
       for (const card of memberCards) {
         const name = card.querySelector(".member-name").value.trim();
         const idType = card.querySelector(".member-id-type").value;
-        const idNumber = card.querySelector(".member-id-number").value.trim();
+        const idNumberInput = card.querySelector(".member-id-number");
+        const idNumber = idNumberInput.value.trim();
         const isVerified = card.dataset.idVerified === "true";
 
         if (!name || !idType || !idNumber) {
-          showBanner("Please fill all occupant names and government ID document numbers.", "error");
+          showBanner("Please complete all occupant names and ID numbers.", "error");
+          return;
+        }
+
+        if (!validateIdDocumentInput(idNumberInput)) {
+          showBanner(`Incorrect ID number format for ${name}. Ensure exact digit requirements are met.`, "error");
+          idNumberInput.focus();
           return;
         }
 
         if (!isVerified) {
-          showBanner(`Please complete Government ID verification via OTP for ${name}. (Demo OTP: ${ID_VERIFY_DEMO_OTP})`, "error");
+          showBanner(`Please complete ID OTP verification for ${name}. (Demo OTP: ${ID_VERIFY_DEMO_OTP})`, "error");
           card.scrollIntoView({ behavior: "smooth", block: "center" });
           return;
         }
@@ -792,7 +851,7 @@
 
       document.getElementById("slipSigImg").src = sigCanvas.toDataURL();
       document.getElementById("slipModal").style.display = "flex";
-      showBanner(`Check-in successful! Customer copy generated for Room ${roomNumber}.`, "success");
+      showBanner(`Check-in completed successfully for Room ${roomNumber}.`, "success");
     }
 
     function closeSlipModal() {
