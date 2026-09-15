@@ -32,7 +32,11 @@
        1. FRONT WELCOME SCREEN (ONLY SHOWN FIRST)
        ======================================================== -->
   <section id="welcomeScreen">
-    <div class="brand-crest">SG</div>
+    <!-- Custom High-Res SG Logo Embedded -->
+    <div class="brand-crest-wrap">
+      <img src="SG.png" alt="The Shanford Grand Logo" class="brand-crest-logo" />
+    </div>
+
     <div class="hotel-stars">★★★★★</div>
 
     <div class="welcome-mega-highlight">
@@ -50,6 +54,7 @@
       "Where prestigious luxury embraces timeless comfort. Step into an extraordinary world of bespoke hospitality and unmatched hotel living."
     </p>
 
+    <!-- LIVE REAL-TIME CLOCK -->
     <div class="live-clock-card">
       <div class="clock-slot">
         <span class="clock-slot-label">Day</span>
@@ -85,7 +90,7 @@
        2. RECEPTION DESK PORTAL (OPENS ON CLICK)
        ======================================================== -->
   <div class="app-shell" id="receptionPortal">
-    <!-- Front Desk Header -->
+    <!-- Reception Desk Header Bar -->
     <div class="frontdesk-bar">
       <div class="desk-side-left">
         <button type="button" class="btn-back-welcome" onclick="backToWelcome()">
@@ -257,6 +262,7 @@
   <div id="slipModal" class="modal-backdrop">
     <div class="modal-folio-sheet">
       <div class="slip-brand-top">
+        <img src="SG.png" alt="SG Logo" class="slip-brand-logo" />
         <h2>THE SHANFORD GRAND</h2>
         <div style="font-size:0.8rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Customer Folio & Official Registration Slip</div>
       </div>
