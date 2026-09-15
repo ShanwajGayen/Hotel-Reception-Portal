@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="style.css" />
 
   <style>
-    /* Real-Time Border Feedback for ID Validation */
+    /* Real-Time Border Feedback for Form Validation */
     .input-invalid {
       border-color: #ef4444 !important;
       background-color: #fef2f2 !important;
@@ -24,25 +24,6 @@
       border-color: #10b981 !important;
       background-color: #f0fdf4 !important;
       box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
-    }
-
-    /* SG Luxury Crest Emblem */
-    .brand-crest {
-      width: 58px;
-      height: 58px;
-      margin: 0 auto 1rem;
-      border: 2px solid #fbbf24;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: "Cinzel", serif;
-      font-size: 1.35rem;
-      font-weight: 900;
-      color: #fbbf24;
-      letter-spacing: 0.12em;
-      box-shadow: 0 0 20px rgba(251, 191, 36, 0.35);
-      background: radial-gradient(circle, rgba(251, 191, 36, 0.15) 0%, transparent 80%);
     }
   </style>
 </head>
@@ -110,11 +91,11 @@
     <div class="frontdesk-bar">
       <div class="desk-left-group">
         <button type="button" class="btn-back-welcome" onclick="backToWelcome()">← Welcome Page</button>
-        <span class="desk-tag">Front Desk Reception</span>
+        <span class="desk-tag">The Shanford Grand</span>
       </div>
       <div class="desk-status">
         <span class="status-dot"></span>
-        <span>Desk Officer: Shanwaj Gayen (Reception Desk)</span>
+        <span>Front Desk Officer: Shanwaj Gayen (Active)</span>
       </div>
     </div>
 
@@ -388,7 +369,7 @@
       banner.textContent = "";
     }
 
-    /* Auto tab & live checking for 4-digit mobile OTP */
+    /* Auto-tab and validation for 4-digit mobile OTP */
     otpDigits.forEach((box, idx) => {
       box.addEventListener("input", (e) => {
         if (e.target.value.length === 1 && idx < otpDigits.length - 1) {
