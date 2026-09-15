@@ -51,7 +51,7 @@ body {
   max-width: 940px;
   background: var(--brand-gradient);
   border-radius: var(--radius-lg);
-  padding: 4.5rem 2.5rem 4rem;
+  padding: 4rem 2.5rem 3.5rem;
   text-align: center;
   color: #ffffff;
   position: relative;
@@ -73,22 +73,35 @@ body {
   pointer-events: none;
 }
 
-.brand-crest {
-  width: 58px;
-  height: 58px;
-  margin: 0 auto 1rem;
-  border: 2px solid #fbbf24;
-  border-radius: 50%;
+/* Custom SG Logo Container with Luxury Golden Halo */
+.brand-crest-wrap {
+  width: 110px;
+  height: 110px;
+  margin: 0 auto 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "Cinzel", serif;
-  font-size: 1.35rem;
-  font-weight: 900;
-  color: #fbbf24;
-  letter-spacing: 0.12em;
-  box-shadow: 0 0 20px rgba(251, 191, 36, 0.35);
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.15) 0%, transparent 80%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(254, 240, 138, 0.9) 70%, rgba(245, 158, 11, 0.4) 100%);
+  border-radius: 50%;
+  border: 2.5px solid #fbbf24;
+  box-shadow: 
+    0 0 30px rgba(251, 191, 36, 0.6),
+    0 8px 24px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.brand-crest-wrap:hover {
+  transform: scale(1.05);
+  box-shadow: 
+    0 0 40px rgba(251, 191, 36, 0.8),
+    0 10px 28px rgba(0, 0, 0, 0.5);
+}
+
+.brand-crest-logo {
+  max-width: 82%;
+  max-height: 82%;
+  object-fit: contain;
+  display: block;
 }
 
 .hotel-stars {
@@ -166,6 +179,7 @@ body {
   line-height: 1.6;
 }
 
+/* LIVE CLOCK HORIZONTAL STRIP */
 .live-clock-card {
   display: inline-flex;
   align-items: center;
@@ -793,6 +807,7 @@ textarea {
   border-color: #fbbf24;
 }
 
+/* Modal Customer Folio Slip */
 .modal-backdrop {
   display: none;
   position: fixed;
@@ -821,6 +836,14 @@ textarea {
   border-bottom: 2px solid var(--text-main);
   padding-bottom: 1.1rem;
   margin-bottom: 1.25rem;
+}
+
+.slip-brand-logo {
+  width: 65px;
+  height: auto;
+  margin: 0 auto 0.5rem;
+  display: block;
+  object-fit: contain;
 }
 
 .slip-brand-top h2 {
