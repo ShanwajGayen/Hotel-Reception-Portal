@@ -14,7 +14,6 @@
   <link rel="stylesheet" href="style.css" />
 
   <style>
-    /* Real-Time Border Feedback for Form Validation */
     .input-invalid {
       border-color: #ef4444 !important;
       background-color: #fef2f2 !important;
@@ -51,7 +50,6 @@
       "Where prestigious luxury embraces timeless comfort. Step into an extraordinary world of bespoke hospitality and unmatched hotel living."
     </p>
 
-    <!-- LIVE REAL-TIME CLOCK, DAY NAME & CALENDAR -->
     <div class="live-clock-card">
       <div class="clock-slot">
         <span class="clock-slot-label">Day</span>
@@ -87,19 +85,34 @@
        2. RECEPTION DESK PORTAL (OPENS ON CLICK)
        ======================================================== -->
   <div class="app-shell" id="receptionPortal">
-    <!-- Reception Desk Bar -->
+    <!-- Front Desk Header -->
     <div class="frontdesk-bar">
-      <div class="desk-left-group">
-        <button type="button" class="btn-back-welcome" onclick="backToWelcome()">← Welcome Page</button>
-        <span class="desk-tag">The Shanford Grand</span>
+      <div class="desk-side-left">
+        <button type="button" class="btn-back-welcome" onclick="backToWelcome()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          <span>Welcome Screen</span>
+        </button>
+        <div class="desk-ornament-line"></div>
       </div>
-      <div class="desk-status">
-        <span class="status-dot"></span>
-        <span>Front Desk Officer: Shanwaj Gayen (Active)</span>
+
+      <div class="desk-center-emblem">
+        <span class="flourish-wing left">❖</span>
+        <div class="desk-title-group">
+          <span class="desk-portal-subtitle">THE SHANFORD GRAND</span>
+          <h1 class="desk-main-heading">EXECUTIVE RECEPTION DESK</h1>
+        </div>
+        <span class="flourish-wing right">❖</span>
+      </div>
+
+      <div class="desk-side-right">
+        <div class="desk-ornament-line"></div>
+        <div class="desk-officer-pill">
+          <span class="status-pulse-dot"></span>
+          <span class="officer-name">Desk Officer: <strong>Shanwaj Gayen</strong></span>
+        </div>
       </div>
     </div>
 
-    <!-- Registration Form Body -->
     <div class="form-body">
       <div id="statusBanner" class="banner"></div>
 
@@ -140,7 +153,6 @@
             <textarea id="residentialAddress" placeholder="Street, City, State, PIN code" required></textarea>
           </div>
 
-          <!-- Members & Gov ID with OTP Verification -->
           <div class="form-field col-span-2" style="margin-top: 0.5rem;">
             <label>3. Member Details & Government IDs (ID OTP Verification)</label>
             <div id="membersContainer"></div>
@@ -196,7 +208,6 @@
           </div>
         </div>
 
-        <!-- Real-Time Billing Breakdown Box -->
         <div class="billing-panel">
           <div class="billing-row">
             <span>Nights Calculated:</span>
@@ -369,7 +380,6 @@
       banner.textContent = "";
     }
 
-    /* Auto-tab and validation for 4-digit mobile OTP */
     otpDigits.forEach((box, idx) => {
       box.addEventListener("input", (e) => {
         if (e.target.value.length === 1 && idx < otpDigits.length - 1) {
@@ -447,7 +457,6 @@
       }, 1000);
     }
 
-    /* Government ID Format Validation Rules */
     function validateIdDocumentInput(input) {
       const card = input.closest(".member-card");
       const idType = card.querySelector(".member-id-type").value;
