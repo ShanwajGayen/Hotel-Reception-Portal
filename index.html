@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Grand Podder Hotel - Welcome & Reception Desk</title>
+  
+  <!-- Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Connected External CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ========================================================
+       1. FRONT WELCOME SCREEN (ONLY SHOWN FIRST)
+       ======================================================== -->
+  <section id="welcomeScreen">
+    <div class="hotel-stars">★★★★★</div>
+
+    <!-- BIGGEST LETTER SIZE WITH HIGHLIGHT + SMILE -->
+    <div class="welcome-mega-highlight">
+      <span>WELCOME</span>
+      <span class="smile-mega-icon">😊</span>
+    </div>
+
+    <!-- THE GRAND PODDER HOTEL IN UNIQUE LUXURY STYLE -->
+    <div class="hotel-signature-container">
+      <div class="signature-flourish-line"></div>
+      <div class="unique-hotel-brand">THE GRAND PODDER HOTEL</div>
+      <div class="signature-flourish-line right"></div>
+    </div>
+
+    <p class="welcome-lead-quote">
+      "Where prestigious luxury embraces timeless comfort. Step into an extraordinary world of bespoke hospitality and unmatched hotel living."
+    </p>
+
+    <!-- LIVE REAL-TIME CLOCK, DAY NAME & CALENDAR -->
+    <div class="live-clock-card">
+      <div class="clock-slot">
+        <span class="clock-slot-label">Day</span>
+        <span class="clock-slot-value highlight-day" id="liveDayName">Tuesday</span>
+      </div>
+
+      <div class="clock-divider-v"></div>
+
+      <div class="clock-slot">
+        <span class="clock-slot-label">Calendar Date</span>
+        <span class="clock-slot-value" id="liveFullDate">September 15, 2026</span>
+      </div>
+
+      <div class="clock-divider-v"></div>
+
+      <div class="clock-slot">
+        <span class="clock-slot-label">Standard Time</span>
+        <span class="clock-slot-value" id="liveTimeClock">10:41:29 PM</span>
+      </div>
+    </div>
+
+    <div>
+      <button type="button" class="btn-enter-reception" onclick="navigateToReception()">
+        <span>Process to Reception Desk</span>
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       2. RECEPTION DESK PORTAL (OPENS ON CLICK)
+       ======================================================== -->
+  <div class="app-shell" id="receptionPortal">
+    <!-- Reception Desk Bar -->
+    <div class="frontdesk-bar">
+      <div class="desk-left-group">
+        <button type="button" class="btn-back-welcome" onclick="backToWelcome()">← Welcome Page</button>
+        <span class="desk-tag">Front Desk Reception</span>
+      </div>
+      <div class="desk-status">
+        <span class="status-dot"></span>
+        <span>Desk Officer: Shanwaj Gayen (Reception Desk)</span>
+      </div>
+    </div>
+
+    <!-- Registration Form Body -->
+    <div class="form-body">
+      <div id="statusBanner" class="banner"></div>
+
+      <form id="checkInForm" onsubmit="handleRegistrationSubmit(event)">
+        <!-- STEP I -->
+        <div class="step-badge-wrap">
+          <span class="step-pill">1</span>
+          <span class="step-title">i) Primary Guest Verification</span>
+          <div class="step-divider"></div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field col-span-2">
+            <label for="primaryGuestName">Primary Guest Full Name <span class="req">*</span></label>
+            <input type="text" id="primaryGuestName" placeholder="e.g., Shanwaj Gayen" required oninput="syncPrimaryMemberName()" />
+          </div>
+
+          <div class="form-field col-span-2">
+            <label for="guestPhone">Mobile Number <span class="req">*</span></label>
+            <div class="input-addon-wrap">
+              <input type="tel" id="guestPhone" placeholder="10-digit mobile number" pattern="[0-9]{10}" maxlength="10" required />
+              <button type="button" class="btn-action-outline" id="otpSendBtn" onclick="requestOtp()">Send OTP</button>
+            </div>
+          </div>
+
+          <div class="form-field col-span-2">
+            <label>Enter 4-Digit Mobile OTP Code <span class="req">*</span></label>
+            <div class="otp-blocks">
+              <input type="text" maxlength="1" class="otp-cell" pattern="[0-9]" inputmode="numeric" required />
+              <input type="text" maxlength="1" class="otp-cell" pattern="[0-9]" inputmode="numeric" required />
+              <input type="text" maxlength="1" class="otp-cell" pattern="[0-9]" inputmode="numeric" required />
+              <input type="text" maxlength="1" class="otp-cell" pattern="[0-9]" inputmode="numeric" required />
+            </div>
+          </div>
+
+          <div class="form-field col-span-2">
+            <label for="residentialAddress">Address <span class="req">*</span></label>
+            <textarea id="residentialAddress" placeholder="Street, City, State, PIN code" required></textarea>
+          </div>
+
+          <!-- Members & Gov ID with OTP Verification -->
+          <div class="form-field col-span-2" style="margin-top: 0.5rem;">
+            <label>3. Member Details & Government IDs (Aadhaar / ID OTP Verification)</label>
+            <div id="membersContainer"></div>
+            <button type="button" class="btn-add-member" onclick="addMemberSlot()">+ Add Another Member</button>
+          </div>
+        </div>
+
+        <!-- STEP II -->
+        <div class="step-badge-wrap">
+          <span class="step-pill">2</span>
+          <span class="step-title">ii) Room & Stay Details</span>
+          <div class="step-divider"></div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="roomNumber">Room Number <span class="req">*</span></label>
+            <input type="text" id="roomNumber" placeholder="e.g., 302" required />
+          </div>
+          <div class="form-field">
+            <label for="roomRate">Rate Per Night (₹) <span class="req">*</span></label>
+            <input type="number" id="roomRate" value="2500" min="0" oninput="recalculateBilling()" required />
+          </div>
+          <div class="form-field">
+            <label for="checkInDate">Check-In Date & Time <span class="req">*</span></label>
+            <input type="datetime-local" id="checkInDate" onchange="handleDateChange()" required />
+          </div>
+          <div class="form-field">
+            <label for="checkOutDate">Check-Out Date & Time <span class="req">*</span></label>
+            <input type="datetime-local" id="checkOutDate" onchange="handleDateChange()" required />
+          </div>
+        </div>
+
+        <!-- STEP III -->
+        <div class="step-badge-wrap">
+          <span class="step-pill">3</span>
+          <span class="step-title">iii) Payment & Billing Settlement</span>
+          <div class="step-divider"></div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="advancePaid">Advance Paid (₹)</label>
+            <input type="number" id="advancePaid" value="0" min="0" oninput="recalculateBilling()" />
+          </div>
+          <div class="form-field">
+            <label for="paymentStatus">Payment Status</label>
+            <select id="paymentStatus">
+              <option value="Partially Paid / Advance">Partially Paid / Advance</option>
+              <option value="Fully Paid">Fully Paid</option>
+              <option value="Unpaid / Due">Unpaid / Due</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Real-Time Billing Breakdown Box -->
+        <div class="billing-panel">
+          <div class="billing-row">
+            <span>Nights Calculated:</span>
+            <strong id="dispNights">1 night(s)</strong>
+          </div>
+          <div class="billing-row">
+            <span>Room Cost (Before GST):</span>
+            <span id="dispRoomCost">₹0.00</span>
+          </div>
+          <div class="billing-row">
+            <span>GST (12%):</span>
+            <span id="dispGst">₹0.00</span>
+          </div>
+          <div class="billing-row total-line">
+            <span>Gross Total Bill:</span>
+            <strong id="dispGrossTotal">₹0.00</strong>
+          </div>
+          <div class="billing-row due-line">
+            <span>Balance Due:</span>
+            <strong id="dispBalanceDue">₹0.00</strong>
+          </div>
+        </div>
+
+        <!-- STEP IV -->
+        <div class="step-badge-wrap">
+          <span class="step-pill">4</span>
+          <span class="step-title">iv) Digital Signature for Verification</span>
+          <div class="step-divider"></div>
+        </div>
+
+        <div class="sig-frame">
+          <label>Sign inside the panel to authorize guest registration:</label>
+          <canvas id="sigCanvas" width="760" height="130"></canvas>
+          <div class="sig-actions">
+            <span>Verified Timestamp (Check-in): <strong id="sigTimestampDisplay" style="color:var(--text-main);">--</strong></span>
+            <button type="button" class="btn-clear-sig" onclick="clearSignature()">Clear Pad</button>
+          </div>
+        </div>
+
+        <!-- STEP V -->
+        <button type="submit" class="btn-submit-main">v) Generate Customer Copy & Complete Check-In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- STEP V: Customer Folio Modal -->
+  <div id="slipModal" class="modal-backdrop">
+    <div class="modal-folio-sheet">
+      <div class="slip-brand-top">
+        <h2>THE GRAND PODDER HOTEL</h2>
+        <div style="font-size:0.8rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Customer Folio & Official Registration Slip</div>
+      </div>
+
+      <div class="folio-data-grid">
+        <div class="folio-data-item"><span>Primary Guest:</span> <span id="slipGuestName"></span></div>
+        <div class="folio-data-item"><span>Room Assigned:</span> <span id="slipRoomNo"></span></div>
+        <div class="folio-data-item"><span>Phone:</span> <span id="slipPhone"></span></div>
+        <div class="folio-data-item"><span>Check-In:</span> <span id="slipCheckIn"></span></div>
+        <div class="folio-data-item"><span>Address:</span> <span id="slipAddress"></span></div>
+        <div class="folio-data-item"><span>Check-Out:</span> <span id="slipCheckOut"></span></div>
+      </div>
+
+      <div style="font-size:0.85rem; font-weight:700; margin-top:0.75rem; margin-bottom:0.35rem;">Occupants & Registered ID Details</div>
+      <table class="folio-table">
+        <thead>
+          <tr>
+            <th style="width:36px;">#</th>
+            <th>Member Name</th>
+            <th>Government ID</th>
+            <th>Document ID Number</th>
+            <th>Auth Status</th>
+          </tr>
+        </thead>
+        <tbody id="slipMembersTableBody"></tbody>
+      </table>
+
+      <div style="font-size:0.85rem; font-weight:700; margin-top:0.75rem; margin-bottom:0.35rem;">Billing Breakdown</div>
+      <div class="folio-calc-row"><span>Total Duration:</span> <strong id="slipDuration"></strong></div>
+      <div class="folio-calc-row"><span>Room Charges (Pre-Tax):</span> <span id="slipRoomCost"></span></div>
+      <div class="folio-calc-row"><span>Goods & Services Tax (12%):</span> <span id="slipGst"></span></div>
+      <div class="folio-calc-row" style="font-weight:700; color:var(--text-main);"><span>Gross Total Bill:</span> <span id="slipGross"></span></div>
+      <div class="folio-calc-row"><span>Advance Paid:</span> <span id="slipAdvance"></span></div>
+      <div class="folio-calc-row" style="color:var(--danger); font-weight:700;"><span>Balance Due:</span> <span id="slipDue"></span></div>
+      <div class="folio-calc-row"><span>Settlement Status:</span> <strong id="slipStatus"></strong></div>
+
+      <div class="folio-bottom-sign">
+        <div>
+          <div style="font-size:0.75rem; color:var(--text-muted);">Verified Check-In Date & Time:</div>
+          <div id="slipTimestamp" style="font-size:0.85rem; font-weight:700;"></div>
+        </div>
+        <div class="folio-sign-box">
+          <img id="slipSigImg" alt="Guest Digital Signature" />
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.3rem;">Guest Authorized Signature</div>
+        </div>
+      </div>
+
+      <div class="modal-ctrls">
+        <button type="button" class="btn-folio-print" onclick="window.print()">Print / Save Customer Copy</button>
+        <button type="button" class="btn-folio-close" onclick="closeSlipModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DEMO_OTP = "1234";
+    const ID_VERIFY_DEMO_OTP = "9999";
+    let isOtpSent = false;
+    let hasSigned = false;
+
+    const banner = document.getElementById("statusBanner");
+    const otpDigits = document.querySelectorAll(".otp-cell");
+    const otpSendBtn = document.getElementById("otpSendBtn");
+    const membersContainer = document.getElementById("membersContainer");
+    const sigCanvas = document.getElementById("sigCanvas");
+    const sigCtx = sigCanvas.getContext("2d");
+    const sigTimestampDisplay = document.getElementById("sigTimestampDisplay");
+    const welcomeScreen = document.getElementById("welcomeScreen");
+    const receptionPortal = document.getElementById("receptionPortal");
+
+    function navigateToReception() {
+      welcomeScreen.style.display = "none";
+      receptionPortal.style.display = "block";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function backToWelcome() {
+      receptionPortal.style.display = "none";
+      welcomeScreen.style.display = "block";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateLiveClock() {
+      const now = new Date();
+      const weekday = now.toLocaleDateString('en-US', { weekday: 'long' });
+      const fullDate = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+
+      document.getElementById("liveDayName").textContent = weekday;
+      document.getElementById("liveFullDate").textContent = fullDate;
+      document.getElementById("liveTimeClock").textContent = timeStr;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      updateLiveClock();
+      setInterval(updateLiveClock, 1000);
+
+      const now = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      document.getElementById("checkInDate").value = now.toISOString().slice(0, 16);
+      document.getElementById("checkOutDate").value = tomorrow.toISOString().slice(0, 16);
+
+      handleDateChange();
+      addMemberSlot(true);
+      initSignaturePad();
+      recalculateBilling();
+    });
+
+    function showBanner(msg, type = "error") {
+      banner.textContent = msg;
+      banner.className = `banner banner-${type}`;
+      banner.style.display = "block";
+    }
+
+    function clearBanner() {
+      banner.style.display = "none";
+      banner.textContent = "";
+    }
+
+    otpDigits.forEach((box, idx) => {
+      box.addEventListener("input", (e) => {
+        if (e.target.value.length === 1 && idx < otpDigits.length - 1) {
+          otpDigits[idx + 1].focus();
+        }
+      });
+      box.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace" && !e.target.value && idx > 0) {
+          otpDigits[idx - 1].focus();
+        }
+      });
+    });
+
+    function requestOtp() {
+      clearBanner();
+      const phone = document.getElementById("guestPhone").value.trim();
+
+      if (!/^\d{10}$/.test(phone)) {
+        showBanner("Please enter a valid 10-digit mobile number before requesting OTP.", "error");
+        document.getElementById("guestPhone").focus();
+        return;
+      }
+
+      isOtpSent = true;
+      otpSendBtn.disabled = true;
+      let timerVal = 30;
+      otpSendBtn.textContent = `Resend (${timerVal}s)`;
+      showBanner(`OTP sent to +91 ${phone}. (Demo code: ${DEMO_OTP})`, "success");
+      otpDigits[0].focus();
+
+      const countdown = setInterval(() => {
+        timerVal--;
+        if (timerVal > 0) {
+          otpSendBtn.textContent = `Resend (${timerVal}s)`;
+        } else {
+          clearInterval(countdown);
+          otpSendBtn.disabled = false;
+          otpSendBtn.textContent = "Send OTP";
+        }
+      }, 1000);
+    }
+
+    function addMemberSlot(isPrimary = false) {
+      const index = membersContainer.querySelectorAll(".member-card").length + 1;
+      const card = document.createElement("div");
+      card.className = "member-card";
+      card.dataset.idVerified = "false";
+      card.dataset.idOtpSent = "false";
+
+      card.innerHTML = `
+        <div class="member-card-top">
+          <span class="member-card-title">
+            Member #${index} ${isPrimary ? '<span class="badge-primary-member">Primary Occupant</span>' : ''}
+            <span class="id-verified-badge">✓ ID OTP Verified</span>
+          </span>
+          ${!isPrimary ? `<button type="button" class="btn-remove-member" onclick="removeMember(this)">✕ Remove</button>` : ''}
+        </div>
+        <div class="member-tri-grid">
+          <input type="text" class="member-name" placeholder="Full Name" ${isPrimary ? 'id="primaryMemberNameInput"' : ''} required />
+          <select class="member-id-type" required onchange="handleIdTypeSelection(this)">
+            <option value="" disabled selected>Select Gov ID</option>
+            <option value="Aadhaar Card">Aadhaar Card (Instant OTP)</option>
+            <option value="Passport">Passport</option>
+            <option value="Voter ID">Voter ID</option>
+            <option value="Driving License">Driving License</option>
+          </select>
+          <input type="text" class="member-id-number" placeholder="Document ID Number" required />
+        </div>
+
+        <div class="id-verification-panel">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label style="font-size:0.775rem; color:var(--brand); font-weight:700;">Government ID Linked OTP Verification</label>
+            <span class="id-status-text" style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Verification Pending</span>
+          </div>
+          <div class="id-otp-controls">
+            <button type="button" class="btn-action-outline btn-send-id-otp" onclick="sendIdOtp(this)" style="padding:0.45rem 0.9rem; font-size:0.8rem;">
+              Send Verification OTP
+            </button>
+            <input type="text" class="id-otp-input" placeholder="Enter 4-Digit OTP" maxlength="4" pattern="[0-9]{4}" />
+            <button type="button" class="btn-verify-id" onclick="verifyIdOtp(this)">
+              Verify ID
+            </button>
+          </div>
+        </div>
+      `;
+
+      membersContainer.appendChild(card);
+      if (isPrimary) syncPrimaryMemberName();
+      refreshMemberLabels();
+    }
+
+    function handleIdTypeSelection(selectEl) {
+      const card = selectEl.closest(".member-card");
+      const idInput = card.querySelector(".member-id-number");
+      if (selectEl.value === "Aadhaar Card") {
+        idInput.placeholder = "Enter 12-Digit Document Number";
+      } else {
+        idInput.placeholder = "Document ID Number";
+      }
+    }
+
+    function sendIdOtp(btn) {
+      clearBanner();
+      const card = btn.closest(".member-card");
+      const idType = card.querySelector(".member-id-type").value;
+      const idNum = card.querySelector(".member-id-number").value.trim();
+
+      if (!idType) {
+        showBanner("Please select the Government ID type first.", "error");
+        return;
+      }
+      if (!idNum) {
+        showBanner("Please enter the Government ID document number before requesting verification OTP.", "error");
+        card.querySelector(".member-id-number").focus();
+        return;
+      }
+
+      card.dataset.idOtpSent = "true";
+      btn.disabled = true;
+      let timer = 30;
+      btn.textContent = `Resend (${timer}s)`;
+
+      const statusText = card.querySelector(".id-status-text");
+      statusText.textContent = `OTP dispatched to registered mobile (Use demo: ${ID_VERIFY_DEMO_OTP})`;
+      statusText.style.color = "var(--brand-accent)";
+
+      showBanner(`Authentication code sent for ${idType}. Demo OTP: ${ID_VERIFY_DEMO_OTP}`, "success");
+
+      const interval = setInterval(() => {
+        timer--;
+        if (timer > 0) {
+          btn.textContent = `Resend (${timer}s)`;
+        } else {
+          clearInterval(interval);
+          btn.disabled = false;
+          btn.textContent = "Resend OTP";
+        }
+      }, 1000);
+    }
+
+    function verifyIdOtp(btn) {
+      clearBanner();
+      const card = btn.closest(".member-card");
+      const otpInput = card.querySelector(".id-otp-input");
+      const enteredOtp = otpInput.value.trim();
+      const statusText = card.querySelector(".id-status-text");
+      const badge = card.querySelector(".id-verified-badge");
+
+      if (card.dataset.idOtpSent !== "true") {
+        showBanner("Please click 'Send Verification OTP' first.", "error");
+        return;
+      }
+
+      if (enteredOtp !== ID_VERIFY_DEMO_OTP) {
+        showBanner(`Invalid ID verification code. Enter demo OTP: ${ID_VERIFY_DEMO_OTP}`, "error");
+        return;
+      }
+
+      card.dataset.idVerified = "true";
+      card.classList.add("is-verified");
+      badge.style.display = "inline-flex";
+      statusText.textContent = "Identity Authenticated Successfully";
+      statusText.style.color = "var(--success)";
+
+      btn.disabled = true;
+      btn.textContent = "Verified ✓";
+      btn.style.background = "var(--success)";
+      otpInput.disabled = true;
+      card.querySelector(".btn-send-id-otp").disabled = true;
+      card.querySelector(".member-id-type").disabled = true;
+      card.querySelector(".member-id-number").readOnly = true;
+
+      showBanner("Government ID successfully authenticated.", "success");
+    }
+
+    function removeMember(btn) {
+      btn.closest(".member-card").remove();
+      refreshMemberLabels();
+    }
+
+    function refreshMemberLabels() {
+      const cards = membersContainer.querySelectorAll(".member-card");
+      cards.forEach((c, i) => {
+        const titleSpan = c.querySelector(".member-card-title");
+        const verified = c.dataset.idVerified === "true";
+        titleSpan.innerHTML = `
+          Member #${i + 1} ${i === 0 ? '<span class="badge-primary-member">Primary Occupant</span>' : ''}
+          <span class="id-verified-badge" style="display:${verified ? 'inline-flex' : 'none'};">✓ ID OTP Verified</span>
+        `;
+      });
+    }
+
+    function syncPrimaryMemberName() {
+      const primaryName = document.getElementById("primaryGuestName").value;
+      const primarySlot = document.getElementById("primaryMemberNameInput");
+      if (primarySlot) primarySlot.value = primaryName;
+    }
+
+    function handleDateChange() {
+      const checkInVal = document.getElementById("checkInDate").value;
+      sigTimestampDisplay.textContent = checkInVal ? checkInVal.replace("T", " ") : "--";
+      recalculateBilling();
+    }
+
+    function recalculateBilling() {
+      const checkIn = new Date(document.getElementById("checkInDate").value);
+      const checkOut = new Date(document.getElementById("checkOutDate").value);
+      const rate = parseFloat(document.getElementById("roomRate").value) || 0;
+      const advance = parseFloat(document.getElementById("advancePaid").value) || 0;
+
+      let nights = 1;
+      if (!isNaN(checkIn) && !isNaN(checkOut) && checkOut > checkIn) {
+        const diffHours = (checkOut - checkIn) / (1000 * 60 * 60);
+        nights = Math.max(1, Math.ceil(diffHours / 24));
+      }
+
+      const roomCost = nights * rate;
+      const gst = roomCost * 0.12;
+      const grossTotal = roomCost + gst;
+      const balanceDue = Math.max(0, grossTotal - advance);
+
+      const statusField = document.getElementById("paymentStatus");
+      if (balanceDue === 0 && grossTotal > 0) {
+        statusField.value = "Fully Paid";
+      } else if (advance === 0) {
+        statusField.value = "Unpaid / Due";
+      } else {
+        statusField.value = "Partially Paid / Advance";
+      }
+
+      document.getElementById("dispNights").textContent = `${nights} night(s)`;
+      document.getElementById("dispRoomCost").textContent = `₹${roomCost.toFixed(2)}`;
+      document.getElementById("dispGst").textContent = `₹${gst.toFixed(2)}`;
+      document.getElementById("dispGrossTotal").textContent = `₹${grossTotal.toFixed(2)}`;
+      document.getElementById("dispBalanceDue").textContent = `₹${balanceDue.toFixed(2)}`;
+
+      return { nights, roomCost, gst, grossTotal, balanceDue, advance };
+    }
+
+    function initSignaturePad() {
+      let isDrawing = false;
+
+      function getPos(e) {
+        const rect = sigCanvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: (clientX - rect.left) * (sigCanvas.width / rect.width),
+          y: (clientY - rect.top) * (sigCanvas.height / rect.height)
+        };
+      }
+
+      function startDraw(e) {
+        isDrawing = true;
+        hasSigned = true;
+        const pos = getPos(e);
+        sigCtx.beginPath();
+        sigCtx.moveTo(pos.x, pos.y);
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const pos = getPos(e);
+        sigCtx.lineWidth = 2.4;
+        sigCtx.lineCap = "round";
+        sigCtx.strokeStyle = "#0f172a";
+        sigCtx.lineTo(pos.x, pos.y);
+        sigCtx.stroke();
+      }
+
+      function stopDraw() { isDrawing = false; }
+
+      sigCanvas.addEventListener("mousedown", startDraw);
+      sigCanvas.addEventListener("mousemove", draw);
+      window.addEventListener("mouseup", stopDraw);
+
+      sigCanvas.addEventListener("touchstart", startDraw, { passive: false });
+      sigCanvas.addEventListener("touchmove", draw, { passive: false });
+      window.addEventListener("touchend", stopDraw);
+    }
+
+    function clearSignature() {
+      sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+      hasSigned = false;
+    }
+
+    function handleRegistrationSubmit(e) {
+      e.preventDefault();
+      clearBanner();
+
+      const otp = Array.from(otpDigits).map(d => d.value).join("");
+      if (!isOtpSent) {
+        showBanner("Please send OTP and verify mobile number.", "error");
+        return;
+      }
+      if (otp !== DEMO_OTP) {
+        showBanner("Invalid primary mobile OTP code. Please use demo OTP: 1234.", "error");
+        return;
+      }
+
+      const memberCards = membersContainer.querySelectorAll(".member-card");
+      const memberList = [];
+      for (const card of memberCards) {
+        const name = card.querySelector(".member-name").value.trim();
+        const idType = card.querySelector(".member-id-type").value;
+        const idNumber = card.querySelector(".member-id-number").value.trim();
+        const isVerified = card.dataset.idVerified === "true";
+
+        if (!name || !idType || !idNumber) {
+          showBanner("Please fill all occupant names and government ID document numbers.", "error");
+          return;
+        }
+
+        if (!isVerified) {
+          showBanner(`Please complete Government ID verification via OTP for ${name}. (Demo OTP: ${ID_VERIFY_DEMO_OTP})`, "error");
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+
+        memberList.push({ name, idType, idNumber, status: "Verified ✓" });
+      }
+
+      if (!hasSigned) {
+        showBanner("Please provide digital signature verification to complete check-in.", "error");
+        sigCanvas.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+
+      const billing = recalculateBilling();
+      const guestName = document.getElementById("primaryGuestName").value.trim();
+      const roomNumber = document.getElementById("roomNumber").value.trim();
+      const phone = document.getElementById("guestPhone").value.trim();
+      const address = document.getElementById("residentialAddress").value.trim();
+      const checkIn = document.getElementById("checkInDate").value.replace("T", " ");
+      const checkOut = document.getElementById("checkOutDate").value.replace("T", " ");
+      const status = document.getElementById("paymentStatus").value;
+
+      document.getElementById("slipGuestName").textContent = guestName;
+      document.getElementById("slipRoomNo").textContent = roomNumber;
+      document.getElementById("slipPhone").textContent = "+91 " + phone;
+      document.getElementById("slipCheckIn").textContent = checkIn;
+      document.getElementById("slipAddress").textContent = address;
+      document.getElementById("slipCheckOut").textContent = checkOut;
+
+      const tbody = document.getElementById("slipMembersTableBody");
+      tbody.innerHTML = memberList.map((m, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${m.name}</td>
+          <td>${m.idType}</td>
+          <td>${m.idNumber}</td>
+          <td style="color:var(--success); font-weight:700;">${m.status}</td>
+        </tr>
+      `).join("");
+
+      document.getElementById("slipDuration").textContent = `${billing.nights} night(s)`;
+      document.getElementById("slipRoomCost").textContent = `₹${billing.roomCost.toFixed(2)}`;
+      document.getElementById("slipGst").textContent = `₹${billing.gst.toFixed(2)}`;
+      document.getElementById("slipGross").textContent = `₹${billing.grossTotal.toFixed(2)}`;
+      document.getElementById("slipAdvance").textContent = `₹${billing.advance.toFixed(2)}`;
+      document.getElementById("slipDue").textContent = `₹${billing.balanceDue.toFixed(2)}`;
+      document.getElementById("slipStatus").textContent = status;
+      document.getElementById("slipTimestamp").textContent = checkIn;
+
+      document.getElementById("slipSigImg").src = sigCanvas.toDataURL();
+      document.getElementById("slipModal").style.display = "flex";
+      showBanner(`Check-in successful! Customer copy generated for Room ${roomNumber}.`, "success");
+    }
+
+    function closeSlipModal() {
+      document.getElementById("slipModal").style.display = "none";
+    }
+  </script>
+</body>
+</html>
